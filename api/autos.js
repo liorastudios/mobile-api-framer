@@ -3,14 +3,19 @@ export default async function handler(req, res) {
   const password = process.env.MOBILE_PASSWORD;
   const sellerId = process.env.MOBILE_SELLER_ID;
 
+  if (!username || !password || !sellerId) {
+    return res.status(500).json({ error: 'Environment variables missing' });
+  }
+
   const url = `https://services.mobile.de/seller-api/sellers/${sellerId}/offers`;
 
-  const auth = Buffer.from(`${username}:${password}`).toString('base64');
+  const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
 
   try {
     const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        'Authorization': `Basic ${auth}`,
+        'Authorization': `Basic ${basicAuth}`,
         'Accept': 'application/json'
       }
     });
